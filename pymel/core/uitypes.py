@@ -3906,7 +3906,7 @@ class AELoader(type):
 
     @staticmethod
     def load(modname, classname, nodename):
-        mod = __import__(modname, globals(), locals(), [classname], -1)
+        mod = __import__(modname, globals(), locals(), [classname], 0)
         try:
             cls = getattr(mod, classname)
             cls(nodename)
@@ -4014,17 +4014,21 @@ class AETemplate(with_metaclass(AELoader, object)):
 
     def callCustom(self, newFunc, replaceFunc, *attrs):
         # cmds.editorTemplate(callCustom=( (newFunc, replaceFunc) + attrs))
-        import pymel.tools.py2mel
-        if hasattr(newFunc, '__call__'):
-            name = self.__class__.__name__ + '_callCustom_newFunc_' + '_'.join(attrs)
-            newFunc = pymel.tools.py2mel.py2melProc(
-                newFunc, procName=name, argTypes=['string'] * len(attrs))
-        if hasattr(replaceFunc, '__call__'):
-            name = self.__class__.__name__ + '_callCustom_replaceFunc_' + '_'.join(attrs)
-            replaceFunc = pymel.tools.py2mel.py2melProc(
-                replaceFunc, procName=name, argTypes=['string'] * len(attrs))
-        args = (newFunc, replaceFunc) + attrs
-        cmds.editorTemplate(callCustom=1, *args)
+        #import pymel.tools.py2mel
+        #if hasattr(newFunc, '__call__'):
+        #    name = self.__class__.__name__ + '_callCustom_newFunc_' + '_'.join(attrs)
+        #    newFunc = pymel.tools.py2mel.py2melProc(
+        #        newFunc, procName=name, argTypes=['string'] * len(attrs))
+        #if hasattr(replaceFunc, '__call__'):
+        #    name = self.__class__.__name__ + '_callCustom_replaceFunc_' + '_'.join(attrs)
+        #    replaceFunc = pymel.tools.py2mel.py2melProc(
+        #        replaceFunc, procName=name, argTypes=['string'] * len(attrs))
+        from functools import partial
+        newFunc = partial(newFunc, *attrs)
+        replaceFunc = partial(replaceFunc, *attrs)
+        args = (newFunc, replaceFunc, *attrs)
+        cmds.editorTemplate(callCustom=(newFunc, replaceFunc))
+        #cmds.editorTemplate(callCustom=(newFunc, replaceFunc))
 
     def suppress(self, control):
         cmds.editorTemplate(suppress=control)
