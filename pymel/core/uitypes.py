@@ -4024,10 +4024,11 @@ class AETemplate(with_metaclass(AELoader, object)):
         #    replaceFunc = pymel.tools.py2mel.py2melProc(
         #        replaceFunc, procName=name, argTypes=['string'] * len(attrs))
         from functools import partial
+        #print("DBG: ", newFunc)
         newFunc = partial(newFunc, *attrs)
         replaceFunc = partial(replaceFunc, *attrs)
-        args = (newFunc, replaceFunc, *attrs)
-        cmds.editorTemplate(callCustom=(newFunc, replaceFunc))
+        #args = (newFunc, replaceFunc, *attrs)
+        cmds.editorTemplate(callCustom=[newFunc, replaceFunc])
         #cmds.editorTemplate(callCustom=(newFunc, replaceFunc))
 
     def suppress(self, control):
